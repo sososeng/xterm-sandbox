@@ -1,0 +1,83 @@
+<!doctype html>
+  <html>
+    <head>
+      <link rel="stylesheet" href="node_modules/xterm/dist/xterm.css" />
+      <link rel="stylesheet" href="node_modules/xterm/dist/addons/fullscreen/fullscreen.css" />
+
+      <link rel="stylesheet" href="style.css" />
+      <script src="node_modules/xterm/dist/xterm.js"></script>
+      <script src="node_modules/xterm/dist/addons/fullscreen/fullscreen.js"></script>
+      <script src="node_modules/xterm/dist/addons/fit/fit.js"></script>
+    </head>
+    <body>
+      <!-- <div id="terminal"></div> -->
+      <div id="terminal-container" class = "container"></div>
+      <script>
+        // Terminal.applyAddon(fullscreen);
+        // var term = new Terminal({cursorBlink: true});
+        //
+        // term.on('data', (data) => term.write(data));
+        //
+        // term.open(document.getElementById('terminal'));
+        // term.toggleFullScreen(true);
+        // attachCustomKeyEventHandler
+        // term.write('$');
+
+        var terminalContainer = document.getElementById('terminal-container');
+        Terminal.applyAddon(fit);
+        //Terminal.applyAddon(fullscreen);
+
+        var term = new Terminal({
+            cursorBlink: true
+          });
+
+        term.open(terminalContainer);
+        //term.toggleFullScreen();
+       term.fit();
+       term.setOption("theme",{"foreground": "green", "cursor":"green",});
+       term.setOption("fontSize", 18 );
+       term.setOption("fontWeight","bold");
+       
+        var shellprompt = '$ ';
+
+          term.prompt = function () {
+            term.write('\r\n' + shellprompt);
+          };
+
+          term.writeln('Welcome to xterm.js');
+          term.writeln('This is a local terminal emulation, without a real terminal in the back-end.');
+          term.writeln('Type some keys and commands to play around.');
+          term.writeln('');
+          term.prompt();
+          var typedString = "";
+          term.on('key', function (key, ev) {
+            var printable = (
+              !ev.altKey && !ev.altGraphKey && !ev.ctrlKey && !ev.metaKey
+            );
+
+            if (ev.keyCode == 13) {
+              console.log(typedString)
+              typedString = "";
+              term.prompt();
+            } else if (ev.keyCode == 8) {
+             // Do not delete the prompt
+              console.log();
+              if (typedString.length > 0) {
+                typedString = typedString.slice(0,-1);
+                term.write('\b \b');
+              }
+            } else if (printable) {
+              typedString = typedString + key;
+              term.write(key);
+
+            }
+          });
+
+          term.on('paste', function (data, ev) {
+            term.write(data);
+          });
+
+
+      </script>
+    </body>
+  </html>
